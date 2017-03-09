@@ -1,0 +1,1 @@
+editar perfil, subir foto, validar que no puedan introducirlo en blanco
