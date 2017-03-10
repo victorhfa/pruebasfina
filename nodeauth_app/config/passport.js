@@ -31,7 +31,7 @@ module.exports = function(passport) {
             done(err, user);
         });
     });
-    
+
     // =========================================================================
     // LOCAL LOGIN =============================================================
     // =========================================================================
@@ -66,8 +66,8 @@ module.exports = function(passport) {
         });
 
     }));
-    
-    
+
+
     // =========================================================================
     // LOCAL SIGNUP ============================================================
     // =========================================================================
@@ -119,12 +119,60 @@ module.exports = function(passport) {
         });
 
     }));
-    
-    
+
+    // =========================================================================
+    // LOCAL EDIT-PROFILE ============================================================
+    // =========================================================================
+    // we are using named strategies since we have one for login and one for signup
+    // by default, if there was no name, it would just be called 'local'
+
+    passport.use('edit-profile', new LocalStrategy({
+        // by default, local strategy uses username and password, we will override with email
+        usernameField : 'email',
+        passwordField : 'password',
+        passReqToCallback : true // allows us to pass back the entire request to the callback
+    },
+    function(req, email, password, done) {
+
+        // asynchronous
+        // User.findOne wont fire unless data is sent back
+        process.nextTick(function() {
+
+            // find a user whose email is the same as the forms email
+            // we are checking to see if the user trying to login already exists
+            User.findOne({ 'local.email' :  email }, function(err, user) {
+                // if there are any errors, return the error
+                if (err)
+                    return done(err);
+
+                // check to see if theres already a user with that email
+                if (user) {
+                    return done(null, false, req.flash('edit-profileMessage', 'The email you have provided is already in use'));
+                } else {
+
+                    // set the user's local credentials
+                    user.local.email    = email;
+                    user.local.password = newUser.generateHash(password);
+
+                    // save the user
+                    user.save(function(err) {
+                        if (err)
+                            throw err;
+                        return done(null, newUser);
+                    });
+                }
+
+            });
+
+        });
+
+    }));
+
+
     // =========================================================================
     // FACEBOOK ================================================================
     // =========================================================================
-    
+
     passport.use(new FacebookStrategy({
 
         // pull in our app id and secret from our auth.js file
@@ -140,7 +188,7 @@ module.exports = function(passport) {
 
         // asynchronous
         process.nextTick(function() {
-            
+
             // check if the user is already logged in
             if (!req.user){
 
@@ -177,8 +225,8 @@ module.exports = function(passport) {
                         var newUser            = new User();
 
                         // set all of the facebook information in our user model
-                        newUser.facebook.id    = profile.id; // set the users facebook id                   
-                        newUser.facebook.token = token; // we will save the token that facebook provides to the user                    
+                        newUser.facebook.id    = profile.id; // set the users facebook id
+                        newUser.facebook.token = token; // we will save the token that facebook provides to the user
                         newUser.facebook.name  = profile.displayName; // look at the passport user profile to see how names are returned
                         newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
 
@@ -192,9 +240,9 @@ module.exports = function(passport) {
                         });
                     }
                 });
-                
+
             }else{
-                
+
                 // user already exists and is logged in, we have to link accounts
                 var user            = req.user; // pull the user out of the session
 
@@ -214,11 +262,11 @@ module.exports = function(passport) {
         });
 
     }));
-    
+
     // =========================================================================
     // TWITTER ================================================================
     // =========================================================================
-    
+
     passport.use(new TwitterStrategy({
 
         // pull in our app id and secret from our auth.js file
@@ -235,7 +283,7 @@ module.exports = function(passport) {
         // make the code asynchronous
         // User.findOne won't fire until we have all our data back from Twitter
         process.nextTick(function() {
-            
+
             // check if the user is already logged in
             if (!req.user){
 
@@ -300,7 +348,7 @@ module.exports = function(passport) {
                     if (err)
                         throw err;
                     return done(null, user);
-                }); 
+                });
             }
         });
 

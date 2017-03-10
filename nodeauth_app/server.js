@@ -35,6 +35,10 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
+// set the static files location /public/img will be /img for users
+app.use(express.static(__dirname + '/public'));
+app.set('views',__dirname + '/public/views');
+
 // routes ======================================================================
 require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 

@@ -13,12 +13,6 @@ module.exports = {
         'consumerKey'       : 'fEdh4UJmnUE9oYdaEqpaXoJKh',
         'consumerSecret'    : 'ARnx6Yag4IBHUjxeTSRynjPQJ6r49iRPoqootOUICT0ScGawft',
         'callbackURL'       : 'http://localhost:8080/auth/twitter/callback'
-    },
-
-    'googleAuth' : {
-        'clientID'      : 'your-secret-clientID-here',
-        'clientSecret'  : 'ilovescotchscotchyscotchscotch',
-        'callbackURL'   : 'http://localhost:8080/auth/google/callback'
     }
 
 };
